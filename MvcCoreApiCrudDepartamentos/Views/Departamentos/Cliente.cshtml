@@ -1,0 +1,109 @@
+﻿@section Scripts {
+	<script>
+		let url = "https://apicorecruddepartamentoscarolina.azurewebsites.net/";
+		$(document).ready(function(){
+			loadDepartamentos();
+
+			$("#botoninsert").click(function(){
+				let id = $("#cajaid").val();
+				let nombre = $("#cajanombre").val();
+				let localidad = $("#cajalocalidad").val();
+				//CREAMOS UN OBBJETO JAVASCRIPT CON LAS MISMAS PROPIEDADES QUE EL JSON DEL SERVICIO
+				let dept = new Object();
+				dept.idDepartamento = id;
+				dept.nombre = nombre;
+				dept.localidad = localidad;
+				var json =  JSON.stringify(dept);
+				var request = "api/departamentos";
+				$.ajax({
+				url: url + request,
+				type: "POST",
+				data: json,
+				contentType: "application/json",
+				success: function(data){
+					loadDepartamentos();
+				}
+			})
+			})
+
+			$("#botonupdate").click(function(){
+				let id = parseInt($("#cajaid").val());
+				let nombre = $("#cajanombre").val();
+				let localidad = $("#cajalocalidad").val();
+				let dept = new Object();
+				dept.idDepartamento = id;
+				dept.nombre = nombre;
+				dept.localidad = localidad;
+				var json =  JSON.stringify(dept);
+				var request = "api/departamentos";
+				$.ajax({
+				url: url + request,
+				type: "PUT",
+				data: json,
+				contentType: "application/json",
+				success: function(){
+					loadDepartamentos();
+				}
+			})
+			})
+
+			$("#botondelete").click(function(){
+				let id = $("#cajaid").val();
+				let request = "api/departamentos/" + id;
+				$.ajax({
+				url: url + request,
+				type: "DELETE",
+				success: function(){
+					loadDepartamentos();
+				}
+			})
+			})
+		})
+
+		function loadDepartamentos(){
+			let request = "api/departamentos";
+			$.ajax({
+				url: url + request,
+				type: "GET",
+				dataType: "json",
+				success: function(data){
+					var html = "";
+						$.each(data, function(index, dept){
+							html += "<tr>";
+							html += "<td>" + dept.idDepartamento + "</td>";
+							html += "<td>" + dept.nombre + "</td>";
+							html += "<td>" + dept.localidad + "</td>";
+							html += "</tr>";
+						})
+						$("#tabladepartamentos tbody").html(html)
+				}
+			})
+		}
+
+	</script>
+}
+
+<h1>Cliente Api Crud departamentos</h1>
+
+<form>
+	<label>Id departamento</label>
+	<input type="text" id="cajaid" class="form-control" />
+	<label>Nombre</label>
+	<input type="text" id="cajanombre" class="form-control" />
+	<label>Localidad</label>
+	<input type="text" id="cajalocalidad" class="form-control" />
+	<button type="button" class="btn btn-warning" id="botoninsert">Insertar</button>
+	<button type="button" class="btn btn-info" id="botonupdate">Update</button>
+	<button type="button" class="btn btn-danger" id="botondelete">Delete</button>
+</form>
+
+<table id="tabladepartamentos" class="table table-bordered">
+	<thead>
+		<tr>
+			<th>Id</th>
+			<th>Nombre</th>
+			<th>Localidad</th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+</table>
